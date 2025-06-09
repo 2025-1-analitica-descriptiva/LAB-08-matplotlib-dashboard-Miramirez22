@@ -28,99 +28,99 @@ def pregunta_01():
 
     os.makedirs("docs", exist_ok=True)
 
-    datos_envios = pd.read_csv("files/input/shipping-data.csv")
+    df = pd.read_csv("files/input/shipping-data.csv")
 
-    def graficar_envios_por_bodega(df):
+    def plot_shipping_per_warehouse(df):
         plt.figure()
-        conteo_bodegas = df["Warehouse_block"].value_counts()
-        conteo_bodegas.plot.bar(
-            title="Envíos por Bloque de Bodega",
-            xlabel="Bloque de Bodega",
-            ylabel="Cantidad de Registros",
+        counts = df["Warehouse_block"].value_counts()
+        counts.plot.bar(
+            title="Shipping per Warehouse",
+            xlabel="Warehouse block",
+            ylabel="Record Count",
             color="tab:blue",
             fontsize=8,
         )
         plt.gca().spines["top"].set_visible(False)
         plt.gca().spines["right"].set_visible(False)
         plt.tight_layout()
-        plt.savefig("docs/envios_por_bodega.png")
+        plt.savefig("docs/shipping_per_warehouse.png")
 
-    def graficar_modalidad_envio(df):
+    def plot_mode_of_shipment(df):
         plt.figure()
-        conteo_modalidad = df["Mode_of_Shipment"].value_counts()
-        conteo_modalidad.plot.pie(
-            title="Modalidad de Envío",
+        counts = df["Mode_of_Shipment"].value_counts()
+        counts.plot.pie(
+            title="Mode of shipment",
             wedgeprops=dict(width=0.35),
             ylabel="",
             colors=["tab:blue", "tab:orange", "tab:green"],
         )
         plt.tight_layout()
-        plt.savefig("docs/modalidad_envio.png")
+        plt.savefig("docs/mode_of_shipment.png")
 
-    def graficar_calificacion_promedio(df):
+    def plot_average_customer_rating(df):
         plt.figure()
-        resumen_calificaciones = df.groupby("Mode_of_Shipment")["Customer_rating"].describe()
-        resumen_calificaciones = resumen_calificaciones[["mean", "min", "max"]]
+        resumen = df.groupby("Mode_of_Shipment")["Customer_rating"].describe()
+        resumen = resumen[["mean", "min", "max"]]
         plt.barh(
-            y=resumen_calificaciones.index,
-            width=resumen_calificaciones["max"] - 1,
-            left=resumen_calificaciones["min"],
+            y=resumen.index,
+            width=resumen["max"] - 1,
+            left=resumen["min"],
             height=0.9,
             color="lightgray",
             alpha=0.8,
         )
-        colores = ["tab:green" if val >= 3 else "tab:orange" for val in resumen_calificaciones["mean"]]
+        colores = ["tab:green" if val >= 3 else "tab:orange" for val in resumen["mean"]]
         plt.barh(
-            y=resumen_calificaciones.index,
-            width=resumen_calificaciones["mean"] - 1,
-            left=resumen_calificaciones["min"],
+            y=resumen.index,
+            width=resumen["mean"] - 1,
+            left=resumen["min"],
             color=colores,
             height=0.5,
         )
-        plt.title("Calificación Promedio del Cliente")
+        plt.title("Average Customer Rating")
         plt.gca().spines["top"].set_visible(False)
         plt.gca().spines["right"].set_visible(False)
         plt.gca().spines["left"].set_color("gray")
         plt.gca().spines["bottom"].set_color("gray")
         plt.tight_layout()
-        plt.savefig("docs/calificacion_promedio.png")
+        plt.savefig("docs/average_customer_rating.png")
 
-    def graficar_distribucion_peso(df):
+    def plot_weight_distribution(df):
         plt.figure()
         df["Weight_in_gms"].plot.hist(
-            title="Distribución del Peso Enviado",
+            title="Shipped Weight Distribution",
             color="tab:orange",
             edgecolor="white",
         )
         plt.gca().spines["top"].set_visible(False)
         plt.gca().spines["right"].set_visible(False)
         plt.tight_layout()
-        plt.savefig("docs/distribucion_peso.png")
+        plt.savefig("docs/weight_distribution.png")
 
-    graficar_envios_por_bodega(datos_envios)
-    graficar_modalidad_envio(datos_envios)
-    graficar_calificacion_promedio(datos_envios)
-    graficar_distribucion_peso(datos_envios)
+    # Ejecutar funciones de graficación
+    plot_shipping_per_warehouse(df)
+    plot_mode_of_shipment(df)
+    plot_average_customer_rating(df)
+    plot_weight_distribution(df)
 
-    # Crear HTML con las gráficas embebidas
-    html_dashboard = """
+    # Crear HTML con los nombres correctos
+    html_code = """
     <!DOCTYPE html>
     <html>
     <head>
-        <title>Dashboard de Envíos</title>
+        <title>Shipping Dashboard</title>
     </head>
     <body>
-        <h1>Dashboard de Envíos</h1>
-        <img src="envios_por_bodega.png" alt="Gráfico de envíos por bodega"><br><br>
-        <img src="modalidad_envio.png" alt="Gráfico de modalidad de envío"><br><br>
-        <img src="calificacion_promedio.png" alt="Gráfico de calificación promedio"><br><br>
-        <img src="distribucion_peso.png" alt="Gráfico de distribución de peso">
+        <h1>Shipping Dashboard</h1>
+        <img src="shipping_per_warehouse.png" alt="Shipping per Warehouse"><br><br>
+        <img src="mode_of_shipment.png" alt="Mode of Shipment"><br><br>
+        <img src="average_customer_rating.png" alt="Average Customer Rating"><br><br>
+        <img src="weight_distribution.png" alt="Weight Distribution">
     </body>
     </html>
     """
+    with open("docs/index.html", "w") as f:
+        f.write(html_code)
 
-    with open("docs/index.html", "w") as archivo_html:
-        archivo_html.write(html_dashboard)
 
-# Ejecutar la función
 pregunta_01()
